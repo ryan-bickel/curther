@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
-use std::thread;
 use std::time::Duration;
 use atomic_float::AtomicF32;
 use rodio::{OutputStreamBuilder, SampleRate, Sink, Source};
@@ -9,13 +8,13 @@ use crate::mutable_signal_generator::MutableSignalGenerator;
 
 const SAMPLE_RATE: SampleRate = 48_000;
 
-struct Theramin {
+struct Theremin {
     sink: Sink,
     frequency: Arc<AtomicF32>,
     amplitude: Arc<AtomicF32>
 }
 
-impl Theramin {
+impl Theremin {
     pub fn new(frequency: f32, amplitude: f32, function: Function) -> Self {
         let output_stream = OutputStreamBuilder::open_default_stream()
             .expect("unable to create output stream");
@@ -34,7 +33,7 @@ impl Theramin {
             });
         sink.append(source);
 
-        Theramin {
+        Theremin {
             sink,
             frequency: frequency_ref,
             amplitude: amplitude_ref,
