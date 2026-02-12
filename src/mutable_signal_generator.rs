@@ -1,4 +1,4 @@
-// mostly a copy of rodio's SignalGenerator with a mutable frequency
+// mostly a copy of rodio's SignalGenerator with a mutable frequency and amplitude
 
 use std::time::Duration;
 use rodio::{ChannelCount, SampleRate, Source};
@@ -9,11 +9,12 @@ pub struct MutableSignalGenerator {
     sample_rate: SampleRate,
     function: GeneratorFunction,
     frequency: f32,
+    amplitude: f32,
     phase: f32,
 }
 
 impl MutableSignalGenerator {
-    pub fn new(sample_rate: SampleRate, frequency: f32, f: Function) -> Self {
+    pub fn new(sample_rate: SampleRate, frequency: f32, amplitude: f32, f: Function) -> Self {
         let function: GeneratorFunction = match f {
             Function::Sine => sine_signal,
             Function::Triangle => triangle_signal,
@@ -21,18 +22,20 @@ impl MutableSignalGenerator {
             Function::Sawtooth => sawtooth_signal,
         };
 
-        Self::with_function(sample_rate, frequency, function)
+        Self::with_function(sample_rate, frequency, amplitude, function)
     }
 
     pub fn with_function(
         sample_rate: SampleRate,
         frequency: f32,
+        amplitude: f32,
         generator_function: GeneratorFunction,
     ) -> Self {
         MutableSignalGenerator {
             sample_rate,
             function: generator_function,
             frequency,
+            amplitude,
             phase: 0.0,
         }
     }
@@ -43,6 +46,14 @@ impl MutableSignalGenerator {
 
     pub fn set_frequency(&mut self, frequency: f32) {
         self.frequency = frequency;
+    }
+
+    pub fn amplitude(&self) -> f32 {
+        self.amplitude
+    }
+
+    pub fn set_amplitude(&mut self, amplitude: f32) {
+        self.amplitude = amplitude
     }
 }
 
