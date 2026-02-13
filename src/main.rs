@@ -22,7 +22,7 @@ struct Args {
 
     /// maximum frequency (at least 0)
     #[arg(
-        short = 'r',
+        short = 'f',
         long,
         default_value_t = 1600.0,
         value_parser = parse_f32_in_range(20.0, 20_000.0)
