@@ -10,8 +10,7 @@ Building from source requires Rust be installed (see [rustup.rs](https://rustup.
 
 ```
 git clone https://github.com/ryan-bickel/curther.git
-cd churther
-cargo install --path .
+cargo install --path curther
 ```
 
 ## Usage
