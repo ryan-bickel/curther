@@ -35,7 +35,7 @@ struct Args {
     frequency: f32,
 
     /// maximum amplitude (0 - 1)
-    #[arg(short = 'a', long, default_value_t = 1.0, value_parser = parse_amplitude)]
+    #[arg(short = 'a', long, default_value_t = 0.2, value_parser = parse_amplitude)]
     amplitude: f32,
 }
 
