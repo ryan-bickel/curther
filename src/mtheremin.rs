@@ -5,18 +5,18 @@ use rdev::{display_size, listen, EventType};
 use rodio::source::Function;
 use crate::theremin::Theremin;
 
-pub struct MThere {
+pub struct MTheremin {
     theremin: Arc<Mutex<Theremin>>,
     frequency: f32,
     amplitude: f32,
 }
 
-impl MThere {
+impl MTheremin {
     pub fn new(frequency: f32, amplitude: f32, function: Function) -> Self {
         let theremin = Theremin::new(frequency, amplitude, function);
         let theremin_ref = Arc::new(Mutex::new(theremin));
 
-        MThere {
+        MTheremin {
             theremin: theremin_ref,
             frequency,
             amplitude
