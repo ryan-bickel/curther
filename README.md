@@ -31,5 +31,5 @@ cargo install --path .
 `curther -w sawtooth -f 4000 -a 0.1`:
 sawtooth waveform with a maximum pitch of 4000 hz at 10% maximum volume
 
-`curther`: defaults to a square waveform with a maximum ptich of 1600 hz at 20% maximum volume
+`curther`: defaults to a square waveform with a maximum pitch of 1600 hz at 20% maximum volume
 
