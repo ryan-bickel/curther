@@ -31,7 +31,7 @@ impl Theremin {
         let source = MutableSignalGenerator::new(SAMPLE_RATE, frequency, amplitude, Function::from(waveform))
             .periodic_access(Duration::from_millis(1000 / 60), move |src| {
                 src.set_frequency(frequency_ref_clone.load(Ordering::Relaxed));
-                src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed))
+                src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed));
             });
         sink.append(source);
 
