@@ -1,6 +1,6 @@
 # curther
 
-A cursor-controlled theremin implemented in Rust.
+A cursor-controlled theremin. Contrary to its pronunciation, curther is implemented in Rust, not Lisp.
 
 Volume is controlled by moving your cursor up or down, and pitch is controlelled by moving it left or right.
 
