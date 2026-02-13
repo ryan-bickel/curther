@@ -1,8 +1,8 @@
 use std::sync::mpsc::{channel, Receiver};
 use std::thread;
 use rdev::{display_size, listen, Event, EventType};
-use rodio::source::Function;
 use crate::theremin::Theremin;
+use crate::Waveform;
 
 pub struct MTheremin {
     theremin: Theremin,
@@ -14,8 +14,8 @@ pub struct MTheremin {
 }
 
 impl MTheremin {
-    pub fn new(frequency: f32, amplitude: f32, function: Function) -> Self {
-        let theremin = Theremin::new(frequency, amplitude, function);
+    pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
+        let theremin = Theremin::new(frequency, amplitude, waveform);
 
         let (width, height) = display_size().unwrap();
 

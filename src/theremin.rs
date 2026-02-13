@@ -5,6 +5,7 @@ use atomic_float::AtomicF32;
 use rodio::{OutputStream, OutputStreamBuilder, SampleRate, Sink, Source};
 use rodio::source::{Function};
 use crate::mutable_signal_generator::MutableSignalGenerator;
+use crate::Waveform;
 
 const SAMPLE_RATE: SampleRate = 48_000;
 
@@ -15,8 +16,19 @@ pub struct Theremin {
     _output_stream: OutputStream,
 }
 
+impl From<Waveform> for Function {
+    fn from(value: Waveform) -> Self {
+        match value {
+            Waveform::Square => Function::Square,
+            Waveform::Sawtooth => Function::Sawtooth,
+            Waveform::Sine => Function::Sine,
+            Waveform::Triangle => Function::Triangle,
+        }
+    }
+}
+
 impl Theremin {
-    pub fn new(frequency: f32, amplitude: f32, function: Function) -> Self {
+    pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
         let output_stream = OutputStreamBuilder::open_default_stream()
             .expect("unable to create output stream");
         let sink = Sink::connect_new(&output_stream.mixer());
@@ -27,7 +39,7 @@ impl Theremin {
         let amplitude_ref = Arc::new(AtomicF32::new(amplitude));
         let amplitude_ref_clone = Arc::clone(&amplitude_ref);
 
-        let source = MutableSignalGenerator::new(SAMPLE_RATE, frequency, amplitude, function)
+        let source = MutableSignalGenerator::new(SAMPLE_RATE, frequency, amplitude, Function::from(waveform))
             .periodic_access(Duration::from_millis(1000 / 60), move |src| {
                 src.set_frequency(frequency_ref_clone.load(Ordering::Relaxed));
                 src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed))

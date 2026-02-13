@@ -3,27 +3,65 @@ mod theremin;
 mod signals;
 mod mutable_signal_generator;
 
-use std::env;
-use rodio::source::Function;
+use std::fmt;
+use clap::{Parser, ValueEnum};
 use crate::mtheremin::MTheremin;
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    // TODO: use argument parser like clap
-    let function = if args.len() < 3 {
-        Function::Square
+fn parse_f32(s: &str, min: f32, max: f32) -> Result<f32, String> {
+    let v: f32 = s.parse().map_err(|_| "must be a floating point number")?;
+    if (min..=max).contains(&v) {
+        Ok(v)
     } else {
-        let function_string = args[2].as_str();
-        match function_string {
-            "square" => Function::Square,
-            "sawtooth" => Function::Sawtooth,
-            "sine" => Function::Sine,
-            "triangle" => Function::Triangle,
-            _ => Function::Square
-        }
-    };
+        Err(format!("must be between {} and {} (inclusive)", min, max))
+    }
+}
 
-    let mut mtheremin = MTheremin::new(2400.0, 0.25, function);
+fn parse_amplitude(s: &str) -> Result<f32, String> {
+    parse_f32(s, 0.0, 1.0)
+}
+
+fn parse_frequency(s: &str) -> Result<f32, String> {
+    parse_f32(s, 20.0, 20_000.0)
+}
+
+#[derive(Parser)]
+struct Args {
+    /// waveform function
+    #[arg(short = 'w', long, default_value_t = Waveform::Square)]
+    waveform: Waveform,
+
+    /// maximum frequency (at least 0)
+    #[arg(short = 'r', long, default_value_t = 1600.0, value_parser = parse_frequency)]
+    frequency: f32,
+
+    /// maximum amplitude (0 - 1)
+    #[arg(short = 'a', long, default_value_t = 1.0, value_parser = parse_amplitude)]
+    amplitude: f32,
+}
+
+#[derive(ValueEnum, Copy, Clone)]
+enum Waveform {
+    Square,
+    Sawtooth,
+    Sine,
+    Triangle,
+}
+
+impl fmt::Display for Waveform {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let str = match self {
+            Waveform::Square => "square".to_string(),
+            Waveform::Sawtooth => "sawtooth".to_string(),
+            Waveform::Sine => "sine".to_string(),
+            Waveform::Triangle => "triangle".to_string(),
+        };
+        write!(f, "{}", str)
+    }
+}
+
+fn main() {
+    let Args { frequency, amplitude, waveform } = Args::parse();
+
+    let mut mtheremin = MTheremin::new(frequency, amplitude, waveform);
     mtheremin.join();
 }
