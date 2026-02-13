@@ -29,12 +29,11 @@ impl Theremin {
         let amplitude_ref_clone = Arc::clone(&amplitude_ref);
 
         let source = MutableSignalGenerator::new(SAMPLE_RATE, frequency, amplitude, Function::from(waveform))
-            .periodic_access(Duration::from_millis(1000 / 60), move |src| {
+            .periodic_access(Duration::from_millis(1), move |src| {
                 src.set_frequency(frequency_ref_clone.load(Ordering::Relaxed));
                 src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed));
             });
         sink.append(source);
-
 
         Theremin {
             frequency: frequency_ref,
