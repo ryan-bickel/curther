@@ -23,6 +23,6 @@ fn main() {
         }
     };
 
-    let mut mthere = MTheremin::new(2400.0, 0.25, function);
-    mthere.play();
+    let mut mtheremin = MTheremin::new(2400.0, 0.25, function);
+    mtheremin.play();
 }
