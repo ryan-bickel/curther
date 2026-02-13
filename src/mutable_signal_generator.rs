@@ -40,16 +40,8 @@ impl MutableSignalGenerator {
         }
     }
 
-    pub fn frequency(&self) -> f32 {
-        self.frequency
-    }
-
     pub fn set_frequency(&mut self, frequency: f32) {
         self.frequency = frequency;
-    }
-
-    pub fn amplitude(&self) -> f32 {
-        self.amplitude
     }
 
     pub fn set_amplitude(&mut self, amplitude: f32) {
@@ -65,10 +57,10 @@ impl Iterator for MutableSignalGenerator {
         let period = self.sample_rate as f32 / self.frequency;
         let phase_step = 1.0f32 / period;
 
-        let f = self.function;
-        let val = Some(f(self.phase));
+        let function = self.function;
+        let val = self.amplitude * function(self.phase);
         self.phase = (self.phase + phase_step).rem_euclid(1.0f32);
-        val
+        Some(val)
     }
 }
 
