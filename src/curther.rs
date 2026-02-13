@@ -8,8 +8,8 @@ pub struct Curther {
     theremin: Theremin,
     frequency: f32,
     amplitude: f32,
-    width: u64,
-    height: u64,
+    width: f64,
+    height: f64,
     rx: Receiver<Event>,
 }
 
@@ -31,8 +31,8 @@ impl Curther {
             theremin,
             frequency,
             amplitude,
-            width,
-            height,
+            width: width as f64,
+            height: height as f64,
             rx
         }
     }
@@ -45,11 +45,14 @@ impl Curther {
         for event in self.rx.iter() {
             match event.event_type {
                 EventType::MouseMove {x, y} => {
-                    let x = x.min(self.width as f64).max(1.0) as f32;
-                    let y = y.min(self.height as f64).max(1.0) as f32;
+                    let x = x.min(self.width).max(1.0);
+                    let y = y.min(self.height).max(1.0);
 
-                    let amplitude = self.amplitude * (y / self.height as f32);
-                    let frequency = self.frequency * (x / self.width as f32);
+                    let amplitude_multiplier = (self.height - y) / self.height;
+                    let frequency_multiplier = x / self.width;
+
+                    let amplitude = self.amplitude * amplitude_multiplier as f32;
+                    let frequency = self.frequency * frequency_multiplier as f32;
 
                     self.theremin.set_amplitude(amplitude);
                     self.theremin.set_frequency(frequency);
