@@ -20,7 +20,7 @@ struct Args {
     )]
     waveform: Waveform,
 
-    /// maximum frequency (at least 0)
+    /// maximum frequency (20 - 20,000)
     #[arg(
         short = 'f',
         long,
