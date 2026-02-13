@@ -15,6 +15,10 @@ cargo install --path curther
 
 ## Usage
 
+If running on MacOS, you will be promted on the first run to allow your terminal to capture the mouse position in the system's accessibility settings.
+
+### Arguments
+
 
 | Option            | Description                            | Possible values                  | Default |
 |-------------------|----------------------------------------|----------------------------------|---------|
