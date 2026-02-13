@@ -16,17 +16,6 @@ pub struct Theremin {
     _output_stream: OutputStream,
 }
 
-impl From<Waveform> for Function {
-    fn from(value: Waveform) -> Self {
-        match value {
-            Waveform::Square => Function::Square,
-            Waveform::Sawtooth => Function::Sawtooth,
-            Waveform::Sine => Function::Sine,
-            Waveform::Triangle => Function::Triangle,
-        }
-    }
-}
-
 impl Theremin {
     pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
         let output_stream = OutputStreamBuilder::open_default_stream()

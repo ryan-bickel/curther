@@ -2,61 +2,41 @@ mod mtheremin;
 mod theremin;
 mod signals;
 mod mutable_signal_generator;
+mod waveform;
+mod parser_utils;
 
-use std::fmt;
-use clap::{Parser, ValueEnum};
+use clap::{Parser};
 use crate::mtheremin::MTheremin;
-
-fn parse_f32(s: &str, min: f32, max: f32) -> Result<f32, String> {
-    let v: f32 = s.parse().map_err(|_| "must be a floating point number")?;
-    if (min..=max).contains(&v) {
-        Ok(v)
-    } else {
-        Err(format!("must be between {} and {} (inclusive)", min, max))
-    }
-}
-
-fn parse_amplitude(s: &str) -> Result<f32, String> {
-    parse_f32(s, 0.0, 1.0)
-}
-
-fn parse_frequency(s: &str) -> Result<f32, String> {
-    parse_f32(s, 20.0, 20_000.0)
-}
+use crate::waveform::Waveform;
+use crate::parser_utils::parse_f32_in_range;
 
 #[derive(Parser)]
 struct Args {
     /// waveform function
-    #[arg(short = 'w', long, default_value_t = Waveform::Square)]
+    #[arg(
+        short = 'w',
+        long,
+        default_value_t = Waveform::Square
+    )]
     waveform: Waveform,
 
     /// maximum frequency (at least 0)
-    #[arg(short = 'r', long, default_value_t = 1600.0, value_parser = parse_frequency)]
+    #[arg(
+        short = 'r',
+        long,
+        default_value_t = 1600.0,
+        value_parser = parse_f32_in_range(20.0, 20_000.0)
+    )]
     frequency: f32,
 
     /// maximum amplitude (0 - 1)
-    #[arg(short = 'a', long, default_value_t = 0.2, value_parser = parse_amplitude)]
+    #[arg(
+        short = 'a',
+        long,
+        default_value_t = 0.2,
+        value_parser = parse_f32_in_range(0.0, 1.0)
+    )]
     amplitude: f32,
-}
-
-#[derive(ValueEnum, Copy, Clone)]
-enum Waveform {
-    Square,
-    Sawtooth,
-    Sine,
-    Triangle,
-}
-
-impl fmt::Display for Waveform {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let str = match self {
-            Waveform::Square => "square".to_string(),
-            Waveform::Sawtooth => "sawtooth".to_string(),
-            Waveform::Sine => "sine".to_string(),
-            Waveform::Triangle => "triangle".to_string(),
-        };
-        write!(f, "{}", str)
-    }
 }
 
 fn main() {
