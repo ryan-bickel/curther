@@ -18,8 +18,9 @@ pub struct Theremin {
 
 impl Theremin {
     pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
-        let output_stream = OutputStreamBuilder::open_default_stream()
+        let mut output_stream = OutputStreamBuilder::open_default_stream()
             .expect("unable to create output stream");
+        output_stream.log_on_drop(false);
         let sink = Sink::connect_new(&output_stream.mixer());
 
         let frequency_ref = Arc::new(AtomicF32::new(frequency));

@@ -1,6 +1,6 @@
 use std::sync::mpsc::{channel, Receiver};
 use std::thread;
-use rdev::{display_size, listen, Event, EventType};
+use rdev::{display_size, listen, Event, EventType, Key};
 use crate::theremin::Theremin;
 use crate::Waveform;
 
@@ -17,12 +17,13 @@ impl Curther {
     pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
         let theremin = Theremin::new(frequency, amplitude, waveform);
 
-        let (width, height) = display_size().unwrap();
+        let (width, height) = display_size()
+            .expect("failed to get display dimensions");
 
         let (tx, rx) = channel();
         thread::spawn(move || {
             listen(move |event| {
-                tx.send(event).unwrap();
+                let _ = tx.send(event);
             })
         });
 
@@ -52,7 +53,10 @@ impl Curther {
 
                     self.theremin.set_amplitude(amplitude);
                     self.theremin.set_frequency(frequency);
-                }
+                },
+                EventType::KeyPress(Key::Escape) => {
+                    return;
+                },
                 _ => {}
             }
         }
