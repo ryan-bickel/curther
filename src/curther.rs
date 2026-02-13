@@ -44,8 +44,8 @@ impl Curther {
         for event in self.rx.iter() {
             match event.event_type {
                 EventType::MouseMove {x, y} => {
-                    let x = x.min(self.width as f64).max(0.0) as f32;
-                    let y = y.min(self.height as f64).max(0.0) as f32;
+                    let x = x.min(self.width as f64).max(1.0) as f32;
+                    let y = y.min(self.height as f64).max(1.0) as f32;
 
                     let amplitude = self.amplitude * (y / self.height as f32);
                     let frequency = self.frequency * (x / self.width as f32);
