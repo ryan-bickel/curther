@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
-use std::thread;
 use std::time::Duration;
 use atomic_float::AtomicF32;
 use rodio::{OutputStream, OutputStreamBuilder, SampleRate, Sink, Source};
@@ -10,9 +9,9 @@ use crate::mutable_signal_generator::MutableSignalGenerator;
 const SAMPLE_RATE: SampleRate = 48_000;
 
 pub struct Theremin {
-    sink: Arc<Sink>,
     frequency: Arc<AtomicF32>,
     amplitude: Arc<AtomicF32>,
+    _sink: Sink,
     _output_stream: OutputStream,
 }
 
@@ -35,12 +34,11 @@ impl Theremin {
             });
         sink.append(source);
 
-        let sink_ref = Arc::new(sink);
 
         Theremin {
-            sink: sink_ref,
             frequency: frequency_ref,
             amplitude: amplitude_ref,
+            _sink: sink,
             _output_stream: output_stream
         }
     }
@@ -51,12 +49,5 @@ impl Theremin {
 
     pub fn set_amplitude(&mut self, amplitude: f32) {
         self.amplitude.store(amplitude, Ordering::Relaxed)
-    }
-
-    pub fn play(&self) {
-        let sink_clone = Arc::clone(&self.sink);
-        thread::spawn(move || {
-            sink_clone.sleep_until_end()
-        });
     }
 }

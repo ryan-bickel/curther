@@ -10,6 +10,7 @@ use crate::mtheremin::MTheremin;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
+    // TODO: use argument parser like clap
     let function = if args.len() < 3 {
         Function::Square
     } else {
@@ -24,5 +25,5 @@ fn main() {
     };
 
     let mut mtheremin = MTheremin::new(2400.0, 0.25, function);
-    mtheremin.play();
+    mtheremin.join();
 }
