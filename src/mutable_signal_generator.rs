@@ -1,4 +1,7 @@
-// mostly a copy of rodio's SignalGenerator with a mutable frequency and amplitude
+// Adapted from rodio's signal generator implementation.
+// Source: rodio v0.21.1, src/source/signal_generator.rs
+// Upstream: https://github.com/RustAudio/rodio
+// License: MIT OR Apache-2.0
 
 use std::time::Duration;
 use rodio::{ChannelCount, SampleRate, Source};

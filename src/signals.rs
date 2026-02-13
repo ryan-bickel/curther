@@ -1,4 +1,7 @@
-// copied from rodio's signal_generator.rs
+// Adapted from rodio's signal generator implementation.
+// Source: rodio v0.21.1, src/source/signal_generator.rs
+// Upstream: https://github.com/RustAudio/rodio
+// License: MIT OR Apache-2.0
 
 use std::f32::consts::TAU;
 
