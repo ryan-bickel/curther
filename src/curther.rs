@@ -4,7 +4,7 @@ use rdev::{display_size, listen, Event, EventType};
 use crate::theremin::Theremin;
 use crate::Waveform;
 
-pub struct MTheremin {
+pub struct Curther {
     theremin: Theremin,
     frequency: f32,
     amplitude: f32,
@@ -13,7 +13,7 @@ pub struct MTheremin {
     rx: Receiver<Event>,
 }
 
-impl MTheremin {
+impl Curther {
     pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
         let theremin = Theremin::new(frequency, amplitude, waveform);
 
@@ -26,7 +26,7 @@ impl MTheremin {
             })
         });
 
-        MTheremin {
+        Curther {
             theremin,
             frequency,
             amplitude,

@@ -1,4 +1,4 @@
-mod mtheremin;
+mod curther;
 mod theremin;
 mod signals;
 mod mutable_signal_generator;
@@ -6,7 +6,7 @@ mod waveform;
 mod parser_utils;
 
 use clap::{Parser};
-use crate::mtheremin::MTheremin;
+use crate::curther::Curther;
 use crate::waveform::Waveform;
 use crate::parser_utils::parse_f32_in_range;
 
@@ -42,6 +42,6 @@ struct Args {
 fn main() {
     let Args { frequency, amplitude, waveform } = Args::parse();
 
-    let mut mtheremin = MTheremin::new(frequency, amplitude, waveform);
-    mtheremin.join();
+    let mut curther = Curther::new(frequency, amplitude, waveform);
+    curther.join();
 }
