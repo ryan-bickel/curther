@@ -10,7 +10,7 @@ use crate::mtheremin::MTheremin;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let function = if (args.len() < 3) {
+    let function = if args.len() < 3 {
         Function::Square
     } else {
         let function_string = args[2].as_str();
