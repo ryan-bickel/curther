@@ -15,6 +15,9 @@ cargo install --path curther
 
 ## Usage
 
+Run `curther` with your desired arguments (see below). Move your mouse up or down to increase or decrease the volume.
+Move your mouse right or left to increase or decrease the pitch. Press escape to exit.
+
 If running on MacOS, you will be promted on the first run to allow your terminal to capture the mouse position in the system's accessibility settings.
 
 ### Arguments
