@@ -13,7 +13,7 @@ pub struct Theremin {
     sink: Arc<Sink>,
     frequency: Arc<AtomicF32>,
     amplitude: Arc<AtomicF32>,
-    output_stream: OutputStream,
+    _output_stream: OutputStream,
 }
 
 impl Theremin {
@@ -41,7 +41,7 @@ impl Theremin {
             sink: sink_ref,
             frequency: frequency_ref,
             amplitude: amplitude_ref,
-            output_stream
+            _output_stream: output_stream
         }
     }
 
