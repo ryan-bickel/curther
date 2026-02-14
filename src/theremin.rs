@@ -17,19 +17,20 @@ pub struct Theremin {
 }
 
 impl Theremin {
-    pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
+    pub fn new(waveform: Waveform) -> Self {
         let mut output_stream = OutputStreamBuilder::open_default_stream()
             .expect("unable to create output stream");
         output_stream.log_on_drop(false);
+        
         let sink = Sink::connect_new(&output_stream.mixer());
 
-        let frequency_ref = Arc::new(AtomicF32::new(frequency));
+        let frequency_ref = Arc::new(AtomicF32::new(0.0));
         let frequency_ref_clone = Arc::clone(&frequency_ref);
 
-        let amplitude_ref = Arc::new(AtomicF32::new(amplitude));
+        let amplitude_ref = Arc::new(AtomicF32::new(0.0));
         let amplitude_ref_clone = Arc::clone(&amplitude_ref);
 
-        let source = MutableSignalGenerator::new(SAMPLE_RATE, frequency, amplitude, Function::from(waveform))
+        let source = MutableSignalGenerator::new(SAMPLE_RATE, Function::from(waveform))
             .periodic_access(Duration::from_millis(1), move |src| {
                 src.set_frequency(frequency_ref_clone.load(Ordering::Relaxed));
                 src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed));

@@ -17,7 +17,7 @@ pub struct MutableSignalGenerator {
 }
 
 impl MutableSignalGenerator {
-    pub fn new(sample_rate: SampleRate, frequency: f32, amplitude: f32, f: Function) -> Self {
+    pub fn new(sample_rate: SampleRate, f: Function) -> Self {
         let function: GeneratorFunction = match f {
             Function::Sine => sine_signal,
             Function::Triangle => triangle_signal,
@@ -25,20 +25,18 @@ impl MutableSignalGenerator {
             Function::Sawtooth => sawtooth_signal,
         };
 
-        Self::with_function(sample_rate, frequency, amplitude, function)
+        Self::with_function(sample_rate, function)
     }
 
     pub fn with_function(
         sample_rate: SampleRate,
-        frequency: f32,
-        amplitude: f32,
         generator_function: GeneratorFunction,
     ) -> Self {
         MutableSignalGenerator {
             sample_rate,
             function: generator_function,
-            frequency,
-            amplitude,
+            frequency: 0.0,
+            amplitude: 0.0,
             phase: 0.0,
         }
     }
