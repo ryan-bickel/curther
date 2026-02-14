@@ -17,7 +17,7 @@ pub struct Theremin {
 }
 
 impl Theremin {
-    pub fn new(waveform: Waveform) -> Self {
+    pub fn new(waveform: Waveform, refresh_rate: u32) -> Self {
         let mut output_stream = OutputStreamBuilder::open_default_stream()
             .expect("unable to create output stream");
         output_stream.log_on_drop(false);
@@ -31,7 +31,7 @@ impl Theremin {
         let amplitude_ref_clone = Arc::clone(&amplitude_ref);
 
         let source = MutableSignalGenerator::new(SAMPLE_RATE, Function::from(waveform))
-            .periodic_access(Duration::from_millis(1), move |src| {
+            .periodic_access(Duration::from_secs(1) / refresh_rate, move |src| {
                 src.set_frequency(frequency_ref_clone.load(Ordering::Relaxed));
                 src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed));
             });

@@ -19,7 +19,7 @@ pub struct Curther {
 
 impl Curther {
     pub fn new(frequency: u32, volume: u32, waveform: Waveform, polling_rate: u32) -> Self {
-        let theremin = Theremin::new(waveform);
+        let theremin = Theremin::new(waveform, polling_rate);
 
         let (width, height) = display_size()
             .expect("failed to get display dimensions");
