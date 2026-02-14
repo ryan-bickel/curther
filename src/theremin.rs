@@ -2,12 +2,10 @@ use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 use atomic_float::AtomicF32;
-use rodio::{OutputStream, OutputStreamBuilder, SampleRate, Sink, Source};
+use rodio::{OutputStream, OutputStreamBuilder, Sink, Source};
 use rodio::source::{Function};
 use crate::mutable_signal_generator::MutableSignalGenerator;
 use crate::Waveform;
-
-const SAMPLE_RATE: SampleRate = 48_000;
 
 pub struct Theremin {
     frequency: Arc<AtomicF32>,
