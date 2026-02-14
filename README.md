@@ -34,8 +34,8 @@ If running on MacOS, you will be prompted on the first run to allow your termina
 
 ### Examples
 
-`curther -w sawtooth -f 4000 -a 0.1`:
-sawtooth waveform with a maximum pitch of 4000 hz at 10% maximum volume
+`curther -w sawtooth -f 4000 -v 10`:
+sawtooth waveform with a maximum frequency of 4000 hz at 10% volume
 
-`curther`: defaults to a square waveform with a maximum pitch of 1600 hz at 20% maximum volume
+`curther`: defaults to a square waveform with a maximum frequency of 1600 hz at 20% volume
 
