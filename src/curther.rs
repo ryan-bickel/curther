@@ -9,8 +9,8 @@ use crate::Waveform;
 
 pub struct Curther {
     theremin: Theremin,
-    frequency: f32,
-    amplitude: f32,
+    frequency: u32,
+    volume: u32,
     width: u64,
     height: u64,
     rx_key: Receiver<Key>,
@@ -18,7 +18,7 @@ pub struct Curther {
 }
 
 impl Curther {
-    pub fn new(frequency: f32, amplitude: f32, waveform: Waveform, polling_rate: u32) -> Self {
+    pub fn new(frequency: u32, volume: u32, waveform: Waveform, polling_rate: u32) -> Self {
         let theremin = Theremin::new(waveform);
 
         let (width, height) = display_size()
@@ -30,7 +30,7 @@ impl Curther {
         Curther {
             theremin,
             frequency,
-            amplitude,
+            volume,
             width,
             height,
             rx_key,
@@ -74,8 +74,8 @@ impl Curther {
         let amplitude_multiplier = (self.height - y) as f32 / self.height as f32;
         let frequency_multiplier = x as f32 / self.width as f32;
 
-        let amplitude = self.amplitude * amplitude_multiplier;
-        let frequency = self.frequency * frequency_multiplier;
+        let amplitude = self.volume as f32 / 100.0 * amplitude_multiplier;
+        let frequency = self.frequency as f32 * frequency_multiplier;
 
         self.theremin.set_amplitude(amplitude);
         self.theremin.set_frequency(frequency);
@@ -101,8 +101,8 @@ fn create_key_listener() -> Receiver<Key> {
 fn create_mouse_poller(polling_rate: u32) -> Receiver<Position> {
     let (tx, rx) = bounded(1);
     thread::spawn(move || {
-        let mut prev_x = 0i32;
-        let mut prev_y = 0i32;
+        let mut prev_x = i32::MIN;
+        let mut prev_y = i32::MIN;
 
         loop {
             match Mouse::get_mouse_position() {
