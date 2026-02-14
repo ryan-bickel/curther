@@ -18,7 +18,7 @@ struct Args {
     )]
     waveform: Waveform,
 
-    /// maximum frequency (20 - 20,000)
+    /// maximum frequency, hz (20 - 20,000)
     #[arg(
         short = 'f',
         long,
@@ -27,7 +27,7 @@ struct Args {
     )]
     frequency: u32,
 
-    /// maximum volume (1 - 100)
+    /// maximum volume, % (1 - 100)
     #[arg(
         short = 'v',
         long,
@@ -36,6 +36,7 @@ struct Args {
     )]
     volume: u32,
 
+    /// mouse polling rate, hz (1 - 1000)
     #[arg(
         short = 'p',
         long,
