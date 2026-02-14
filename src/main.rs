@@ -44,6 +44,15 @@ struct Args {
         value_parser = value_parser!(u32).range(1..=1000)
     )]
     polling_rate: u32,
+
+    /// harmonic ratio
+    #[arg(
+        short = 'r',
+        long,
+        default_value_t = 0,
+        value_parser = value_parser!(u32).range(0..=16)
+    )]
+    harmonic_ratio: u32,
 }
 
 fn main() {
@@ -51,9 +60,10 @@ fn main() {
         frequency,
         volume,
         waveform,
-        polling_rate
+        polling_rate,
+        harmonic_ratio
     } = Args::parse();
 
-    let mut curther = Curther::new(frequency, volume, waveform, polling_rate);
+    let mut curther = Curther::new(frequency, volume, waveform, harmonic_ratio as f32, polling_rate);
     curther.join();
 }

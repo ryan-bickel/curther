@@ -1,21 +1,21 @@
 use std::sync::Arc;
-use std::sync::atomic::Ordering;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 use atomic_float::AtomicF32;
 use rodio::{OutputStream, OutputStreamBuilder, Sink, Source};
-use rodio::source::{Function};
+use rodio::source::Function;
 use crate::mutable_signal_generator::MutableSignalGenerator;
 use crate::Waveform;
 
 pub struct Theremin {
     frequency: Arc<AtomicF32>,
     amplitude: Arc<AtomicF32>,
-    _sink: Sink,
     _output_stream: OutputStream,
+    _sink: Sink,
 }
 
 impl Theremin {
-    pub fn new(waveform: Waveform, refresh_rate: u32) -> Self {
+    pub fn new(waveform: Waveform, refresh_rate: u32, harmonic_ratio: f32) -> Self {
         let mut output_stream = OutputStreamBuilder::open_default_stream()
             .expect("unable to create output stream");
         output_stream.log_on_drop(false);
@@ -23,24 +23,35 @@ impl Theremin {
         
         let sink = Sink::connect_new(&output_stream.mixer());
 
-        let frequency_ref = Arc::new(AtomicF32::new(0.0));
-        let frequency_ref_clone = Arc::clone(&frequency_ref);
+        let frequency= Arc::new(AtomicF32::new(0.0));
+        let amplitude= Arc::new(AtomicF32::new(0.0));
+        let n = AtomicBool::new(false);
+        n.store(true);
 
-        let amplitude_ref = Arc::new(AtomicF32::new(0.0));
-        let amplitude_ref_clone = Arc::clone(&amplitude_ref);
+        let make_source = |ratio: f32| {
+            let frequency_clone = Arc::clone(&frequency);
+            let amplitude_clone = Arc::clone(&amplitude);
+            MutableSignalGenerator::new(sample_rate, Function::from(waveform))
+                .periodic_access(Duration::from_secs(1) / refresh_rate, move |src| {
+                    src.set_frequency(frequency_clone.load(Ordering::Relaxed) / ratio);
+                    src.set_amplitude(amplitude_clone.load(Ordering::Relaxed));
+                })
+        };
 
-        let source = MutableSignalGenerator::new(sample_rate, Function::from(waveform))
-            .periodic_access(Duration::from_secs(1) / refresh_rate, move |src| {
-                src.set_frequency(frequency_ref_clone.load(Ordering::Relaxed));
-                src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed));
-            });
-        sink.append(source);
+        let f = Arc::new(1f32);
+        *f = 5.0;
+
+        if harmonic_ratio != 0.0 && harmonic_ratio != 1.0 {
+            sink.append(make_source(1.0).mix(make_source(harmonic_ratio)));
+        } else {
+            sink.append(make_source(1.0));
+        }
 
         Theremin {
-            frequency: frequency_ref,
-            amplitude: amplitude_ref,
+            frequency,
+            amplitude,
+            _output_stream: output_stream,
             _sink: sink,
-            _output_stream: output_stream
         }
     }
 
