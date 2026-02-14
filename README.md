@@ -24,13 +24,13 @@ If running on MacOS, you will be prompted on the first run to allow your termina
 
 ### Arguments
 
-| Option               | Description                                                         | Possible values                  | Default |
-|----------------------|---------------------------------------------------------------------|----------------------------------|---------|
-| `-w, --waveform`     | Waveform function used by the theremin                              | square, sawtooth, sine, triangle | square  |
-| `-f, --frequency`    | Maximum frequency in hertz                                          | 20 - 20000                       | 1600    |
-| `-v, --volume`       | Maximum volume percentage                                           | 1 - 100                          | 20      |
-| `-p, --polling-rate` | Mouse polling rate in hertz. Reduce if you have performance issues. | 1 - 1000                         | 1000    |
-| `-h, --help`         | Print help                                                          | N/A                              | N/A     |
+| Option               | Description                            | Possible values                  | Default |
+|----------------------|----------------------------------------|----------------------------------|---------|
+| `-w, --waveform`     | Waveform function used by the theremin | square, sawtooth, sine, triangle | square  |
+| `-f, --frequency`    | Maximum frequency in hertz             | 20 - 20000                       | 1600    |
+| `-v, --volume`       | Volume percentage                      | 1 - 100                          | 20      |
+| `-p, --polling-rate` | Mouse polling rate in hertz            | 1 - 1000                         | 1000    |
+| `-h, --help`         | Print help                             | N/A                              | N/A     |
 
 ### Examples
 
