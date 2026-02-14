@@ -21,6 +21,7 @@ impl Theremin {
         let mut output_stream = OutputStreamBuilder::open_default_stream()
             .expect("unable to create output stream");
         output_stream.log_on_drop(false);
+        let sample_rate = output_stream.config().sample_rate();
         
         let sink = Sink::connect_new(&output_stream.mixer());
 
@@ -30,7 +31,7 @@ impl Theremin {
         let amplitude_ref = Arc::new(AtomicF32::new(0.0));
         let amplitude_ref_clone = Arc::clone(&amplitude_ref);
 
-        let source = MutableSignalGenerator::new(SAMPLE_RATE, Function::from(waveform))
+        let source = MutableSignalGenerator::new(sample_rate, Function::from(waveform))
             .periodic_access(Duration::from_secs(1) / refresh_rate, move |src| {
                 src.set_frequency(frequency_ref_clone.load(Ordering::Relaxed));
                 src.set_amplitude(amplitude_ref_clone.load(Ordering::Relaxed));
