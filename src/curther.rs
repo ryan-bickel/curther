@@ -18,14 +18,14 @@ pub struct Curther {
 }
 
 impl Curther {
-    pub fn new(frequency: f32, amplitude: f32, waveform: Waveform) -> Self {
+    pub fn new(frequency: f32, amplitude: f32, waveform: Waveform, polling_rate: u32) -> Self {
         let theremin = Theremin::new(waveform);
 
         let (width, height) = display_size()
             .expect("failed to get display dimensions");
 
         let rx_key = create_key_listener();
-        let rx_mouse = create_mouse_poller();
+        let rx_mouse = create_mouse_poller(polling_rate);
 
         Curther {
             theremin,
@@ -98,7 +98,7 @@ fn create_key_listener() -> Receiver<Key> {
     rx
 }
 
-fn create_mouse_poller() -> Receiver<Position> {
+fn create_mouse_poller(polling_rate: u32) -> Receiver<Position> {
     let (tx, rx) = bounded(1);
     thread::spawn(move || {
         let mut prev_x = 0i32;
@@ -118,7 +118,7 @@ fn create_mouse_poller() -> Receiver<Position> {
                 }
             };
 
-            thread::sleep(Duration::from_millis(1));
+            thread::sleep(Duration::from_secs(1) / polling_rate);
         }
     });
 
