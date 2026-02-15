@@ -5,6 +5,7 @@ use rdev::{display_size, listen, EventType, Key};
 use crossbeam_channel::{bounded, select_biased, Receiver, RecvError};
 use log::debug;
 use crate::theremin::Theremin;
+use crate::theremin_builder::ThereminBuilder;
 use crate::Waveform;
 
 pub struct Curther {
@@ -18,8 +19,16 @@ pub struct Curther {
 }
 
 impl Curther {
-    pub fn new(frequency: u32, volume: u32, waveform: Waveform, harmonic_ratio: f32, polling_rate: u32) -> Self {
-        let theremin = Theremin::new(waveform, polling_rate, harmonic_ratio);
+    pub fn new(frequency: u32, volume: u32, waveform: Waveform, interval: Option<f32>, polling_rate: u32) -> Self {
+        let mut builder = ThereminBuilder::new()
+            .refresh_rate(polling_rate)
+            .add_voice(waveform, 1.0);
+
+        if let Some(interval) = interval {
+            builder = builder.add_voice(waveform, interval);
+        }
+
+        let theremin = builder.build();
 
         let (width, height) = display_size()
             .expect("failed to get display dimensions");

@@ -3,6 +3,7 @@ mod theremin;
 mod signals;
 mod mutable_signal_generator;
 mod waveform;
+mod theremin_builder;
 
 use clap::{value_parser, Parser};
 use crate::curther::Curther;
@@ -45,14 +46,14 @@ struct Args {
     )]
     polling_rate: u32,
 
-    /// harmonic ratio
+    /// interval of a second theremin
     #[arg(
-        short = 'r',
+        short = 'i',
         long,
         default_value_t = 0,
         value_parser = value_parser!(u32).range(0..=16)
     )]
-    harmonic_ratio: u32,
+    interval: u32,
 }
 
 fn main() {
@@ -61,9 +62,9 @@ fn main() {
         volume,
         waveform,
         polling_rate,
-        harmonic_ratio
+        interval
     } = Args::parse();
 
-    let mut curther = Curther::new(frequency, volume, waveform, harmonic_ratio as f32, polling_rate);
+    let mut curther = Curther::new(frequency, volume, waveform, Some(interval as f32), polling_rate);
     curther.join();
 }
