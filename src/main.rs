@@ -40,7 +40,7 @@ struct Args {
     )]
     volume: u32,
 
-    /// a list of intervals (each 1.0 - ∞) [default: disabled]
+    /// space-separated list of intervals (each 1.0 - ∞) [default: disabled]
     #[arg(
         short = 'i',
         long,
