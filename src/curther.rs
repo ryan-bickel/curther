@@ -23,15 +23,17 @@ impl Curther {
         frequency: u32,
         volume: u32,
         waveform: Waveform,
-        interval: Option<f32>,
+        intervals: Option<Vec<f32>>,
         polling_rate: u32
     ) -> Result<Self, CurtherError> {
         let mut builder = ThereminBuilder::new()?
             .refresh_rate(polling_rate)
             .add_voice(waveform, 1.0)?;
 
-        if let Some(interval) = interval {
-            builder = builder.add_voice(waveform, interval)?;
+        if let Some(intervals) = intervals {
+            for interval in intervals {
+                builder = builder.add_voice(waveform, interval)?
+            }
         }
 
         let theremin = builder.build()?;

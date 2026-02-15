@@ -40,13 +40,14 @@ struct Args {
     )]
     volume: u32,
 
-    /// interval (frequency ratio) between two theremins (1.0 - ∞) [default: disabled]
+    /// a list of intervals (each 1.0 - ∞) [default: disabled]
     #[arg(
         short = 'i',
         long,
+        num_args = 1..,
         value_parser = parse_f32_at_least(1.0)
     )]
-    interval: Option<f32>,
+    intervals: Option<Vec<f32>>,
 
     /// mouse polling rate, hz (1 - 1000)
     #[arg(
@@ -63,11 +64,11 @@ fn main() -> Result<(), CurtherError> {
         frequency,
         volume,
         waveform,
-        interval,
+        intervals,
         polling_rate,
     } = Args::parse();
 
-    let mut curther = Curther::new(frequency, volume, waveform, interval, polling_rate)?;
+    let mut curther = Curther::new(frequency, volume, waveform, intervals, polling_rate)?;
     curther.join();
 
     Ok(())
