@@ -39,13 +39,13 @@ impl ThereminBuilder {
         self
     }
 
-    pub fn add_voice(mut self, waveform: Waveform, ratio: f32) -> ThereminBuilder {
+    pub fn add_voice(mut self, waveform: Waveform, interval: f32) -> ThereminBuilder {
         let frequency_clone = Arc::clone(&self.frequency);
         let amplitude_clone = Arc::clone(&self.amplitude);
 
         let source = MutableSignalGenerator::new(self.sample_rate, Function::from(waveform))
             .periodic_access(Duration::from_secs(1) / self.refresh_rate, move |src| {
-                src.set_frequency(frequency_clone.load(Ordering::Relaxed) / ratio);
+                src.set_frequency(frequency_clone.load(Ordering::Relaxed) / interval);
                 src.set_amplitude(amplitude_clone.load(Ordering::Relaxed));
             });
 

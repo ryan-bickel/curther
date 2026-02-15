@@ -4,10 +4,12 @@ mod signals;
 mod mutable_signal_generator;
 mod waveform;
 mod theremin_builder;
+mod parser_utils;
 
 use clap::{value_parser, Parser};
 use crate::curther::Curther;
 use crate::waveform::Waveform;
+use crate::parser_utils::parse_positive_f32;
 
 #[derive(Parser)]
 struct Args {
@@ -50,10 +52,9 @@ struct Args {
     #[arg(
         short = 'i',
         long,
-        default_value_t = 0,
-        value_parser = value_parser!(u32).range(0..=16)
+        value_parser = parse_positive_f32
     )]
-    interval: u32,
+    interval: Option<f32>,
 }
 
 fn main() {
@@ -65,6 +66,6 @@ fn main() {
         interval
     } = Args::parse();
 
-    let mut curther = Curther::new(frequency, volume, waveform, Some(interval as f32), polling_rate);
+    let mut curther = Curther::new(frequency, volume, waveform, interval, polling_rate);
     curther.join();
 }
