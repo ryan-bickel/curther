@@ -62,8 +62,8 @@ fn main() {
         frequency,
         volume,
         waveform,
+        interval,
         polling_rate,
-        interval
     } = Args::parse();
 
     let mut curther = Curther::new(frequency, volume, waveform, interval, polling_rate);
