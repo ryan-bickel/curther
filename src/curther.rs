@@ -24,6 +24,7 @@ impl Curther {
         volume: u32,
         waveform: Waveform,
         interval: Option<f32>,
+        distortion: Option<f32>,
         polling_rate: u32
     ) -> Result<Self, CurtherError> {
         let mut builder = ThereminBuilder::new()?
@@ -32,6 +33,9 @@ impl Curther {
 
         if let Some(interval) = interval {
             builder = builder.add_voice(waveform, interval)?;
+        }
+        if let Some(distortion) = distortion {
+            builder = builder.distortion(distortion)?;
         }
 
         let theremin = builder.build()?;

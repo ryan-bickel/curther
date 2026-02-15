@@ -82,6 +82,17 @@ impl ThereminBuilder {
         Ok(self)
     }
 
+    pub fn distortion(mut self, threshold: f32) -> Result<ThereminBuilder, ThereminBuildError> {
+        if threshold <= 0.0 {
+            return Err(ThereminBuildError::InvalidDistortionThreshold);
+        }
+
+        self.sources = self.sources.into_iter().map(|source| {
+            Box::new(source.distortion(10.0, threshold)) as Box<dyn Source + Send>
+        }).collect();
+        Ok(self)
+    }
+
     pub fn build(mut self) -> Result<Theremin, ThereminBuildError> {
         if self.sources.is_empty() {
             return Err(ThereminBuildError::NoVoices);
@@ -101,6 +112,7 @@ impl ThereminBuilder {
 
 pub enum ThereminBuildError {
     InvalidInterval,
+    InvalidDistortionThreshold,
     NoVoices,
     StreamCreation,
 }
@@ -109,6 +121,7 @@ impl fmt::Debug for ThereminBuildError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let msg = match self {
             ThereminBuildError::InvalidInterval => "interval must be greater than zero",
+            ThereminBuildError::InvalidDistortionThreshold => "distortion threshold must be greater than zero",
             ThereminBuildError::NoVoices => "no voices supplied",
             ThereminBuildError::StreamCreation => "unable to create output stream",
         };

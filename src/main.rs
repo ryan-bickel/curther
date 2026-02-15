@@ -40,6 +40,14 @@ struct Args {
     )]
     volume: u32,
 
+    /// distortion threshold
+    #[arg(
+        short = 'd',
+        long,
+        value_parser = parse_f32_at_least(0.0)
+    )]
+    distortion: Option<f32>,
+
     /// interval between two theremins
     #[arg(
         short = 'i',
@@ -64,10 +72,11 @@ fn main() -> Result<(), CurtherError> {
         volume,
         waveform,
         interval,
+        distortion,
         polling_rate,
     } = Args::parse();
 
-    let mut curther = Curther::new(frequency, volume, waveform, interval, polling_rate)?;
+    let mut curther = Curther::new(frequency, volume, waveform, interval, distortion, polling_rate)?;
     curther.join();
 
     Ok(())
