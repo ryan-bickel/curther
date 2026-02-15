@@ -10,7 +10,7 @@ mod parser_utils;
 use clap::{value_parser, Parser};
 use crate::curther::{Curther, CurtherError};
 use crate::waveform::Waveform;
-use crate::parser_utils::parse_positive_f32;
+use crate::parser_utils::parse_f32_at_least;
 
 #[derive(Parser)]
 struct Args {
@@ -49,11 +49,11 @@ struct Args {
     )]
     polling_rate: u32,
 
-    /// interval of a second theremin
+    /// interval between two theremins
     #[arg(
         short = 'i',
         long,
-        value_parser = parse_positive_f32
+        value_parser = parse_f32_at_least(1.0)
     )]
     interval: Option<f32>,
 }
