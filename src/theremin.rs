@@ -82,12 +82,12 @@ impl ThereminBuilder {
         Ok(self)
     }
 
-    pub fn build(mut self) -> Result<Theremin, ThereminBuildError> {
+    pub fn build(self) -> Result<Theremin, ThereminBuildError> {
         if self.sources.is_empty() {
             return Err(ThereminBuildError::NoVoices);
         }
 
-        self.sources.drain(..).for_each(|source| {
+        self.sources.into_iter().for_each(|source| {
             self.output_stream.mixer().add(source);
         });
 
