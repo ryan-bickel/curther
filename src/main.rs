@@ -3,7 +3,6 @@ mod theremin;
 mod signals;
 mod mutable_signal_generator;
 mod waveform;
-mod theremin_builder;
 mod parser_utils;
 
 use clap::{value_parser, Parser};

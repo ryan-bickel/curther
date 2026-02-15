@@ -4,8 +4,7 @@ use mouse_position::mouse_position::{Mouse, Position};
 use rdev::{display_size, listen, EventType, Key};
 use crossbeam_channel::{bounded, select_biased, Receiver, RecvError};
 use log::debug;
-use crate::theremin::Theremin;
-use crate::theremin_builder::ThereminBuilder;
+use crate::theremin::{Theremin, ThereminBuilder};
 use crate::Waveform;
 
 pub struct Curther {
