@@ -74,7 +74,7 @@ impl ThereminBuilder {
 
         let source = MutableSignalGenerator::new(self.sample_rate, Function::from(waveform))
             .periodic_access(Duration::from_secs(1) / self.refresh_rate, move |src| {
-                src.set_frequency(frequency_clone.load(Ordering::Relaxed) / interval);
+                src.set_frequency(frequency_clone.load(Ordering::Relaxed) * interval);
                 src.set_amplitude(amplitude_clone.load(Ordering::Relaxed));
             });
 

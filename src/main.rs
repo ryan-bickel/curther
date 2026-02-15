@@ -10,7 +10,7 @@ mod parser_utils;
 use clap::{value_parser, Parser};
 use crate::curther::{Curther, CurtherError};
 use crate::waveform::Waveform;
-use crate::parser_utils::parse_f32_at_least;
+use crate::parser_utils::parse_positive_f32;
 
 #[derive(Parser)]
 struct Args {
@@ -40,12 +40,12 @@ struct Args {
     )]
     volume: u32,
 
-    /// space-separated list of intervals (each 1.0 - ∞) [default: disabled]
+    /// space-separated list of intervals ( > 0.0 ) [default: disabled]
     #[arg(
         short = 'i',
         long,
         num_args = 1..,
-        value_parser = parse_f32_at_least(1.0)
+        value_parser = parse_positive_f32
     )]
     intervals: Option<Vec<f32>>,
 
