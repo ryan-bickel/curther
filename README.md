@@ -13,6 +13,16 @@ git clone https://github.com/ryan-bickel/curther.git
 cargo install --path curther
 ```
 
+### Updating
+
+If you deleted the source code, repeat in the installation above. Otherwise:
+
+```
+cd path/to/curther
+git pull
+cargo install --path .
+```
+
 ## Usage
 
 Run `curther` with your desired arguments (see below). Move your mouse up or down to increase or decrease the volume.
