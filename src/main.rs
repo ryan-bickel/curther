@@ -40,6 +40,14 @@ struct Args {
     )]
     volume: u32,
 
+    /// interval between two theremins
+    #[arg(
+        short = 'i',
+        long,
+        value_parser = parse_f32_at_least(1.0)
+    )]
+    interval: Option<f32>,
+
     /// mouse polling rate, hz (1 - 1000)
     #[arg(
         short = 'p',
@@ -48,14 +56,6 @@ struct Args {
         value_parser = value_parser!(u32).range(1..=1000)
     )]
     polling_rate: u32,
-
-    /// interval between two theremins
-    #[arg(
-        short = 'i',
-        long,
-        value_parser = parse_f32_at_least(1.0)
-    )]
-    interval: Option<f32>,
 }
 
 fn main() -> Result<(), CurtherError> {
