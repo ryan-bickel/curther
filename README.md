@@ -50,4 +50,4 @@ If running on MacOS, you will be prompted on the first run to allow your termina
 `curther -w sawtooth -f 4000 -v 10`:
 sawtooth waveform with a maximum frequency of 4000 hz at 10% volume
 
-`curther -w sine -i 1.5 1.48`: intervals at 1.5 and 1.48 times the base frequency (known as the "wolf" interval)
+`curther -w sine -i 1.5 1.531`: intervals at $\frac{1}{1.5}$ and $\frac{1}{1.531}$ times the base frequency (known as the "wolf" interval)
