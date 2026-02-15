@@ -40,7 +40,7 @@ struct Args {
     )]
     volume: u32,
 
-    /// interval (frequency ratio) between two theremins (1 - ∞) [default: disabled]
+    /// interval (frequency ratio) between two theremins (1.0 - ∞) [default: disabled]
     #[arg(
         short = 'i',
         long,
