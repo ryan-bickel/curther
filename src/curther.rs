@@ -1,10 +1,11 @@
+use core::fmt;
 use std::thread;
 use std::time::Duration;
 use mouse_position::mouse_position::{Mouse, Position};
 use rdev::{display_size, listen, EventType, Key};
 use crossbeam_channel::{bounded, select_biased, Receiver, RecvError};
 use log::debug;
-use crate::theremin::{Theremin, ThereminBuilder};
+use crate::theremin::{Theremin, ThereminBuildError, ThereminBuilder};
 use crate::Waveform;
 
 pub struct Curther {
@@ -18,16 +19,22 @@ pub struct Curther {
 }
 
 impl Curther {
-    pub fn new(frequency: u32, volume: u32, waveform: Waveform, interval: Option<f32>, polling_rate: u32) -> Self {
-        let mut builder = ThereminBuilder::new()
+    pub fn new(
+        frequency: u32,
+        volume: u32,
+        waveform: Waveform,
+        interval: Option<f32>,
+        polling_rate: u32
+    ) -> Result<Self, CurtherError> {
+        let mut builder = ThereminBuilder::new()?
             .refresh_rate(polling_rate)
-            .add_voice(waveform, 1.0);
+            .add_voice(waveform, 1.0)?;
 
         if let Some(interval) = interval {
-            builder = builder.add_voice(waveform, interval);
+            builder = builder.add_voice(waveform, interval)?;
         }
 
-        let theremin = builder.build();
+        let theremin = builder.build()?;
 
         let (width, height) = display_size()
             .expect("failed to get display dimensions");
@@ -35,7 +42,7 @@ impl Curther {
         let rx_key = create_key_listener();
         let rx_mouse = create_mouse_poller(polling_rate);
 
-        Curther {
+        Ok(Curther {
             theremin,
             frequency,
             volume,
@@ -43,7 +50,7 @@ impl Curther {
             height,
             rx_key,
             rx_mouse,
-        }
+        })
     }
 
     pub fn join(&mut self) {
@@ -131,4 +138,23 @@ fn create_mouse_poller(polling_rate: u32) -> Receiver<Position> {
     });
 
     rx
+}
+
+pub enum CurtherError {
+    ThereminBuildError(ThereminBuildError)
+}
+
+impl From<ThereminBuildError> for CurtherError {
+    fn from(err: ThereminBuildError) -> Self {
+        CurtherError::ThereminBuildError(err)
+    }
+}
+
+impl fmt::Debug for CurtherError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let msg = match self {
+            CurtherError::ThereminBuildError(msg) => msg
+        };
+        write!(f, "failed to create theremin: {:?}", msg)
+    }
 }

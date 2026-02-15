@@ -1,3 +1,4 @@
+use std::fmt;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -42,20 +43,20 @@ pub struct ThereminBuilder {
 }
 
 impl ThereminBuilder {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self, ThereminBuildError> {
         let mut output_stream = OutputStreamBuilder::open_default_stream()
-            .expect("unable to create output stream");
+            .map_err(|_| ThereminBuildError::StreamCreation)?;
         output_stream.log_on_drop(false);
         let sample_rate = output_stream.config().sample_rate();
 
-        ThereminBuilder {
+        Ok(ThereminBuilder {
             frequency: Arc::new(AtomicF32::new(0.0)),
             amplitude: Arc::new(AtomicF32::new(0.0)),
             refresh_rate: 1000,
             sample_rate,
             output_stream,
             sources: Vec::new(),
-        }
+        })
     }
 
     pub fn refresh_rate(mut self, refresh_rate: u32) -> ThereminBuilder {
@@ -63,7 +64,11 @@ impl ThereminBuilder {
         self
     }
 
-    pub fn add_voice(mut self, waveform: Waveform, interval: f32) -> ThereminBuilder {
+    pub fn add_voice(mut self, waveform: Waveform, interval: f32) -> Result<ThereminBuilder, ThereminBuildError> {
+        if interval <= 0.0 {
+            return Err(ThereminBuildError::InvalidInterval);
+        }
+
         let frequency_clone = Arc::clone(&self.frequency);
         let amplitude_clone = Arc::clone(&self.amplitude);
 
@@ -74,18 +79,39 @@ impl ThereminBuilder {
             });
 
         self.sources.push(Box::new(source));
-        self
+        Ok(self)
     }
 
-    pub fn build(mut self) -> Theremin {
+    pub fn build(mut self) -> Result<Theremin, ThereminBuildError> {
+        if self.sources.is_empty() {
+            return Err(ThereminBuildError::NoVoices);
+        }
+
         self.sources.drain(..).for_each(|source| {
             self.output_stream.mixer().add(source);
         });
 
-        Theremin::new(
+        Ok(Theremin::new(
             self.frequency,
             self.amplitude,
             self.output_stream
-        )
+        ))
+    }
+}
+
+pub enum ThereminBuildError {
+    InvalidInterval,
+    NoVoices,
+    StreamCreation,
+}
+
+impl fmt::Debug for ThereminBuildError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let msg = match self {
+            ThereminBuildError::InvalidInterval => "interval must be greater than zero",
+            ThereminBuildError::NoVoices => "no voices supplied",
+            ThereminBuildError::StreamCreation => "unable to create output stream",
+        };
+        write!(f, "{}", msg)
     }
 }

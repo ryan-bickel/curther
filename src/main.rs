@@ -1,3 +1,5 @@
+extern crate core;
+
 mod curther;
 mod theremin;
 mod signals;
@@ -6,7 +8,7 @@ mod waveform;
 mod parser_utils;
 
 use clap::{value_parser, Parser};
-use crate::curther::Curther;
+use crate::curther::{Curther, CurtherError};
 use crate::waveform::Waveform;
 use crate::parser_utils::parse_positive_f32;
 
@@ -56,7 +58,7 @@ struct Args {
     interval: Option<f32>,
 }
 
-fn main() {
+fn main() -> Result<(), CurtherError> {
     let Args {
         frequency,
         volume,
@@ -65,6 +67,8 @@ fn main() {
         polling_rate,
     } = Args::parse();
 
-    let mut curther = Curther::new(frequency, volume, waveform, interval, polling_rate);
+    let mut curther = Curther::new(frequency, volume, waveform, interval, polling_rate)?;
     curther.join();
+
+    Ok(())
 }
