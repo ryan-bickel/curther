@@ -8,9 +8,10 @@ mod waveform;
 mod parser_utils;
 
 use clap::{value_parser, Parser};
-use crate::curther::{Curther, CurtherError};
+use crate::curther::{Curther, CurtherError, Reverb};
 use crate::waveform::Waveform;
-use crate::parser_utils::parse_positive_f32;
+use crate::parser_utils::{parse_positive_f32, parse_reverb};
+use crate::theremin::ThereminBuildError;
 
 #[derive(Parser)]
 struct Args {
@@ -49,6 +50,15 @@ struct Args {
     )]
     intervals: Option<Vec<f32>>,
 
+    /// reverb
+    #[arg(
+        short = 'r',
+        long,
+        num_args = 2,
+        value_names = ["MS", "AMP"]
+    )]
+    reverb: Option<Vec<String>>,
+
     /// mouse polling rate, hz (1 - 1000)
     #[arg(
         short = 'p',
@@ -65,10 +75,13 @@ fn main() -> Result<(), CurtherError> {
         volume,
         waveform,
         intervals,
+        reverb,
         polling_rate,
     } = Args::parse();
 
-    let mut curther = Curther::new(frequency, volume, waveform, intervals, polling_rate)?;
+    let reverb = parse_reverb(reverb).map_err(|_| CurtherError::ThereminBuildError(ThereminBuildError::InvalidReverb))?;
+
+    let mut curther = Curther::new(frequency, volume, waveform, intervals, reverb, polling_rate)?;
     curther.join();
 
     Ok(())

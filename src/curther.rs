@@ -24,6 +24,7 @@ impl Curther {
         volume: u32,
         waveform: Waveform,
         intervals: Option<Vec<f32>>,
+        reverb: Option<Reverb>,
         polling_rate: u32
     ) -> Result<Self, CurtherError> {
         let mut builder = ThereminBuilder::new()?
@@ -34,6 +35,10 @@ impl Curther {
             for interval in intervals {
                 builder = builder.add_voice(waveform, interval)?
             }
+        }
+        
+        if let Some(Reverb {delay, amplitude}) = reverb {
+            builder = builder.reverb(delay.as_millis() as u64, amplitude)?;
         }
 
         let theremin = builder.build()?;
@@ -159,4 +164,35 @@ impl fmt::Debug for CurtherError {
         };
         write!(f, "failed to create theremin: {:?}", msg)
     }
+}
+
+#[derive(Clone)]
+pub struct Reverb {
+    delay: Duration,
+    amplitude: f32,
+}
+
+impl Reverb {
+    pub fn new(millis: u64, amplitude: f32) -> Result<Self, ReverbError> {
+        if amplitude <= 0.0 {
+            return Err(ReverbError::InvalidAmplitude);
+        }
+        
+        Ok(Reverb {
+            delay: Duration::from_millis(millis),
+            amplitude,
+        })
+    }
+    
+    pub fn delay(&self) -> Duration {
+        self.delay
+    }
+    
+    pub fn amplitude(&self) -> f32 {
+        self.amplitude
+    }
+}
+
+pub enum ReverbError {
+    InvalidAmplitude,
 }

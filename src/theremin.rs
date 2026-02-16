@@ -5,6 +5,7 @@ use std::time::Duration;
 use atomic_float::AtomicF32;
 use rodio::{OutputStream, OutputStreamBuilder, SampleRate, Source};
 use rodio::source::Function;
+use crate::curther::{Reverb, ReverbError};
 use crate::mutable_signal_generator::MutableSignalGenerator;
 use crate::waveform::Waveform;
 
@@ -39,6 +40,7 @@ pub struct ThereminBuilder {
     refresh_rate: u32,
     sample_rate: SampleRate,
     output_stream: OutputStream,
+    reverb: Option<Reverb>,
     sources: Vec<Box<dyn Source + Send>>,
 }
 
@@ -55,6 +57,7 @@ impl ThereminBuilder {
             refresh_rate: 1000,
             sample_rate,
             output_stream,
+            reverb: None,
             sources: Vec::new(),
         })
     }
@@ -82,7 +85,26 @@ impl ThereminBuilder {
                 src.set_amplitude(amplitude_clone.load(Ordering::Relaxed));
             });
 
+        if let Some(reverb) = &self.reverb {
+            let delay = reverb.delay();
+            let amplitude = reverb.amplitude();
+
+            let frequency_clone_2 = Arc::clone(&self.frequency);
+            let amplitude_clone_2 = Arc::clone(&self.amplitude);
+            let delayed = MutableSignalGenerator::new(self.sample_rate, Function::from(waveform))
+                .periodic_access(Duration::from_secs(1) / self.refresh_rate, move |src| {
+                    src.set_frequency(frequency_clone_2.load(Ordering::Relaxed) * interval);
+                    src.set_amplitude(amplitude_clone_2.load(Ordering::Relaxed));
+                }).delay(delay).amplify(amplitude);
+            self.sources.push(Box::new(delayed));
+        }
+
         self.sources.push(Box::new(source));
+        Ok(self)
+    }
+
+    pub fn reverb(mut self, millis: u64, amplitude: f32) -> Result<ThereminBuilder, ThereminBuildError> {
+        self.reverb = Some(Reverb::new(millis, amplitude)?);
         Ok(self)
     }
 
@@ -106,6 +128,7 @@ impl ThereminBuilder {
 pub enum ThereminBuildError {
     InvalidInterval,
     InvalidRefreshRate,
+    InvalidReverb,
     NoVoices,
     StreamCreation,
 }
@@ -115,9 +138,18 @@ impl fmt::Debug for ThereminBuildError {
         let msg = match self {
             ThereminBuildError::InvalidInterval => "interval must be greater than zero",
             ThereminBuildError::InvalidRefreshRate => "refresh rate must be greater than zero",
+            ThereminBuildError::InvalidReverb => "reverb amount must be greater than zero",
             ThereminBuildError::NoVoices => "no voices supplied",
             ThereminBuildError::StreamCreation => "unable to create output stream",
         };
         write!(f, "{}", msg)
+    }
+}
+
+impl From<ReverbError> for ThereminBuildError {
+    fn from(value: ReverbError) -> Self {
+        match value {
+            ReverbError::InvalidAmplitude => ThereminBuildError::InvalidReverb
+        }
     }
 }
