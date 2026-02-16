@@ -27,7 +27,7 @@ impl Curther {
         polling_rate: u32
     ) -> Result<Self, CurtherError> {
         let mut builder = ThereminBuilder::new()?
-            .refresh_rate(polling_rate)
+            .refresh_rate(polling_rate)?
             .add_voice(waveform, 1.0)?;
 
         if let Some(intervals) = intervals {

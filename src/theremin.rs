@@ -59,9 +59,13 @@ impl ThereminBuilder {
         })
     }
 
-    pub fn refresh_rate(mut self, refresh_rate: u32) -> ThereminBuilder {
+    pub fn refresh_rate(mut self, refresh_rate: u32) -> Result<ThereminBuilder, ThereminBuildError> {
+        if refresh_rate == 0 {
+            return Err(ThereminBuildError::InvalidRefreshRate);
+        }
+
         self.refresh_rate = refresh_rate;
-        self
+        Ok(self)
     }
 
     pub fn add_voice(mut self, waveform: Waveform, interval: f32) -> Result<ThereminBuilder, ThereminBuildError> {
@@ -101,6 +105,7 @@ impl ThereminBuilder {
 
 pub enum ThereminBuildError {
     InvalidInterval,
+    InvalidRefreshRate,
     NoVoices,
     StreamCreation,
 }
@@ -109,6 +114,7 @@ impl fmt::Debug for ThereminBuildError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let msg = match self {
             ThereminBuildError::InvalidInterval => "interval must be greater than zero",
+            ThereminBuildError::InvalidRefreshRate => "refresh rate must be greater than zero",
             ThereminBuildError::NoVoices => "no voices supplied",
             ThereminBuildError::StreamCreation => "unable to create output stream",
         };
