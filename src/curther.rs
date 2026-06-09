@@ -7,6 +7,7 @@ use crossbeam_channel::{bounded, select_biased, Receiver, RecvError};
 use log::debug;
 use crate::theremin::{Theremin, ThereminBuildError, ThereminBuilder};
 use crate::Waveform;
+use crate::cursor::Cursor;
 
 pub struct Curther {
     theremin: Theremin,
@@ -117,20 +118,21 @@ fn create_key_listener() -> Receiver<Key> {
 
 fn create_mouse_poller(polling_rate: u32) -> Receiver<Position> {
     let (tx, rx) = bounded(1);
+    let cursor = Cursor::new();
     thread::spawn(move || {
         let mut prev_x = i32::MIN;
         let mut prev_y = i32::MIN;
 
         loop {
-            match Mouse::get_mouse_position() {
-                Mouse::Position {x, y} => {
+            match cursor.get_position() {
+                Ok(Position { x, y })=> {
                     if x != prev_x || y != prev_y {
                         let _ = tx.try_send(Position {x, y});
                         prev_x = x;
                         prev_y = y;
                     }
                 }
-                Mouse::Error => {
+                Err(_) => {
                     debug!("unable to get mouse position")
                 }
             };

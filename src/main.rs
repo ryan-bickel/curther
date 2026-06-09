@@ -6,6 +6,7 @@ mod signals;
 mod mutable_signal_generator;
 mod waveform;
 mod parser_utils;
+mod cursor;
 
 use clap::{value_parser, Parser};
 use crate::curther::{Curther, CurtherError};
