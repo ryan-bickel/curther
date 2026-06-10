@@ -1,18 +1,11 @@
 use core::fmt;
-<<<<<<< Updated upstream
-=======
 use crossbeam_channel::{Receiver, RecvError, bounded, select_biased};
 use log::debug;
 use mouse_position::mouse_position::Position;
 use rdev::{EventType, Key, display_size, listen};
 use rodio::Device;
->>>>>>> Stashed changes
 use std::thread;
 use std::time::Duration;
-use mouse_position::mouse_position::Position;
-use rdev::{display_size, listen, EventType, Key};
-use crossbeam_channel::{bounded, select_biased, Receiver, RecvError};
-use log::debug;
 use crate::theremin::{Theremin, ThereminBuildError, ThereminBuilder};
 use crate::{Waveform, mouse};
 use crate::mouse::{get_mouse};
@@ -33,12 +26,8 @@ impl Curther {
         volume: u32,
         waveform: Waveform,
         intervals: Option<Vec<f32>>,
-<<<<<<< Updated upstream
-        polling_rate: u32
-=======
         polling_rate: u32,
         output_device: Option<Device>,
->>>>>>> Stashed changes
     ) -> Result<Self, CurtherError> {
         mouse::panic_if_mouse_pos_unsupported();
 

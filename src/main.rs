@@ -8,21 +8,12 @@ mod waveform;
 mod parser_utils;
 mod mouse;
 
-use std::thread;
-use std::time::Duration;
-
 use clap::{value_parser, Parser};
 use crate::curther::{Curther, CurtherError};
-<<<<<<< Updated upstream
 use crate::waveform::Waveform;
 use crate::parser_utils::parse_positive_f32;
-use rodio::{OutputStreamBuilder, Source, source::SineWave};
-=======
-use crate::parser_utils::{get_devices, parse_device_name, parse_positive_f32};
-use crate::waveform::Waveform;
-use clap::{Parser, value_parser};
+use crate::parser_utils::{get_devices, parse_device_name};
 use rodio::{Device, DeviceTrait};
->>>>>>> Stashed changes
 
 #[derive(Parser)]
 struct Args {
@@ -70,14 +61,6 @@ struct Args {
     )]
     polling_rate: u32,
 
-<<<<<<< Updated upstream
-    #[arg(
-        short = 't',
-        long,
-        default_value_t = false,
-    )]
-    test_tone: bool,
-=======
     #[arg(short = 'l', long, default_value_t = false)]
     list_output_devices: bool,
 
@@ -87,7 +70,6 @@ struct Args {
         value_parser = parse_device_name
     )]
     output_device: Option<Device>,
->>>>>>> Stashed changes
 }
 
 fn main() -> Result<(), CurtherError> {
@@ -97,24 +79,10 @@ fn main() -> Result<(), CurtherError> {
         waveform,
         intervals,
         polling_rate,
-<<<<<<< Updated upstream
-        test_tone,
-=======
         list_output_devices,
         output_device,
->>>>>>> Stashed changes
     } = Args::parse();
     
-    if test_tone {
-        let output_stream = OutputStreamBuilder::open_default_stream()
-            .expect("should be able to create output stream");
-        output_stream
-            .mixer()
-            .add(SineWave::new(440.0).amplify(0.20));
-        thread::sleep(Duration::from_secs(10));
-        return Ok(());
-    }
-
     if list_output_devices {
         for device in get_devices().unwrap() {
             if let Ok(name) = device.name() {
@@ -122,11 +90,6 @@ fn main() -> Result<(), CurtherError> {
             }
         }
         return Ok(());
-    }
-
-    if let Some(device) = &output_device {
-        let name = device.name().unwrap();
-        println!("{name}");
     }
 
     let mut curther = Curther::new(

@@ -1,20 +1,12 @@
-<<<<<<< Updated upstream
-=======
 use crate::mutable_signal_generator::MutableSignalGenerator;
 use crate::waveform::Waveform;
 use atomic_float::AtomicF32;
 use rodio::source::Function;
 use rodio::{Device, OutputStream, OutputStreamBuilder, SampleRate, Source};
->>>>>>> Stashed changes
 use std::fmt;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
-use atomic_float::AtomicF32;
-use rodio::{OutputStream, OutputStreamBuilder, SampleRate, Source};
-use rodio::source::Function;
-use crate::mutable_signal_generator::MutableSignalGenerator;
-use crate::waveform::Waveform;
 
 pub struct Theremin {
     frequency: Arc<AtomicF32>,
