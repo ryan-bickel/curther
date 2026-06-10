@@ -1,8 +1,8 @@
-use crate::mouse::Result;
 use crate::mouse::Error;
-use crate::mouse::StdResult;
 use crate::mouse::Mouse;
-use mouse_position::{mouse_position, Position};
+use crate::mouse::Result;
+use crate::mouse::StdResult;
+use mouse_position::{Position, mouse_position};
 
 pub fn panic_if_mouse_pos_unsupported() {
     // assume supported

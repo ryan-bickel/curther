@@ -1,6 +1,6 @@
-use std::fmt;
 use clap::ValueEnum;
 use rodio::source::Function;
+use std::fmt;
 
 #[derive(ValueEnum, Copy, Clone)]
 pub enum Waveform {

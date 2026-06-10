@@ -1,12 +1,12 @@
+use crate::mutable_signal_generator::MutableSignalGenerator;
+use crate::waveform::Waveform;
+use atomic_float::AtomicF32;
+use rodio::source::Function;
+use rodio::{OutputStream, OutputStreamBuilder, SampleRate, Source};
 use std::fmt;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
-use atomic_float::AtomicF32;
-use rodio::{OutputStream, OutputStreamBuilder, SampleRate, Source};
-use rodio::source::Function;
-use crate::mutable_signal_generator::MutableSignalGenerator;
-use crate::waveform::Waveform;
 
 pub struct Theremin {
     frequency: Arc<AtomicF32>,
@@ -15,7 +15,11 @@ pub struct Theremin {
 }
 
 impl Theremin {
-    fn new(frequency: Arc<AtomicF32>, amplitude: Arc<AtomicF32>, output_stream: OutputStream) -> Self {
+    fn new(
+        frequency: Arc<AtomicF32>,
+        amplitude: Arc<AtomicF32>,
+        output_stream: OutputStream,
+    ) -> Self {
         Theremin {
             frequency,
             amplitude,
@@ -31,7 +35,6 @@ impl Theremin {
         self.amplitude.store(amplitude, Ordering::Relaxed)
     }
 }
-
 
 pub struct ThereminBuilder {
     frequency: Arc<AtomicF32>,
@@ -59,7 +62,10 @@ impl ThereminBuilder {
         })
     }
 
-    pub fn refresh_rate(mut self, refresh_rate: u32) -> Result<ThereminBuilder, ThereminBuildError> {
+    pub fn refresh_rate(
+        mut self,
+        refresh_rate: u32,
+    ) -> Result<ThereminBuilder, ThereminBuildError> {
         if refresh_rate == 0 {
             return Err(ThereminBuildError::InvalidRefreshRate);
         }
@@ -68,7 +74,11 @@ impl ThereminBuilder {
         Ok(self)
     }
 
-    pub fn add_voice(mut self, waveform: Waveform, interval: f32) -> Result<ThereminBuilder, ThereminBuildError> {
+    pub fn add_voice(
+        mut self,
+        waveform: Waveform,
+        interval: f32,
+    ) -> Result<ThereminBuilder, ThereminBuildError> {
         if interval <= 0.0 {
             return Err(ThereminBuildError::InvalidInterval);
         }
@@ -98,7 +108,7 @@ impl ThereminBuilder {
         Ok(Theremin::new(
             self.frequency,
             self.amplitude,
-            self.output_stream
+            self.output_stream,
         ))
     }
 }

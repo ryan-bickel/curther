@@ -3,10 +3,10 @@
 // Upstream: https://github.com/RustAudio/rodio
 // License: MIT OR Apache-2.0
 
-use std::time::Duration;
-use rodio::{ChannelCount, SampleRate, Source};
-use rodio::source::{Function, GeneratorFunction};
 use crate::signals::{sawtooth_signal, sine_signal, square_signal, triangle_signal};
+use rodio::source::{Function, GeneratorFunction};
+use rodio::{ChannelCount, SampleRate, Source};
+use std::time::Duration;
 
 pub struct MutableSignalGenerator {
     sample_rate: SampleRate,
@@ -28,10 +28,7 @@ impl MutableSignalGenerator {
         Self::with_function(sample_rate, function)
     }
 
-    pub fn with_function(
-        sample_rate: SampleRate,
-        generator_function: GeneratorFunction,
-    ) -> Self {
+    pub fn with_function(sample_rate: SampleRate, generator_function: GeneratorFunction) -> Self {
         MutableSignalGenerator {
             sample_rate,
             function: generator_function,

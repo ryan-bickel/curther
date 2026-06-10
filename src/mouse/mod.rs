@@ -8,9 +8,9 @@ mod other;
 #[cfg(not(unix))]
 use other::DefaultMouse;
 
-use thiserror::Error;
 use derive_more::Display;
 use mouse_position::mouse_position::Position;
+use thiserror::Error;
 
 #[derive(Debug, Display, Error)]
 pub enum Error {
@@ -49,5 +49,3 @@ pub fn panic_if_mouse_pos_unsupported() {
 pub trait Mouse {
     fn get_position(&mut self) -> Result;
 }
-
-

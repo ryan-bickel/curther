@@ -1,13 +1,13 @@
-use core::fmt;
-use std::thread;
-use std::time::Duration;
-use mouse_position::mouse_position::Position;
-use rdev::{display_size, listen, EventType, Key};
-use crossbeam_channel::{bounded, select_biased, Receiver, RecvError};
-use log::debug;
+use crate::mouse::get_mouse;
 use crate::theremin::{Theremin, ThereminBuildError, ThereminBuilder};
 use crate::{Waveform, mouse};
-use crate::mouse::{get_mouse};
+use core::fmt;
+use crossbeam_channel::{Receiver, RecvError, bounded, select_biased};
+use log::debug;
+use mouse_position::mouse_position::Position;
+use rdev::{EventType, Key, display_size, listen};
+use std::thread;
+use std::time::Duration;
 
 pub struct Curther {
     theremin: Theremin,
@@ -16,7 +16,7 @@ pub struct Curther {
     width: u64,
     height: u64,
     rx_key: Receiver<Key>,
-    rx_mouse: Receiver<Position>
+    rx_mouse: Receiver<Position>,
 }
 
 impl Curther {
@@ -25,7 +25,7 @@ impl Curther {
         volume: u32,
         waveform: Waveform,
         intervals: Option<Vec<f32>>,
-        polling_rate: u32
+        polling_rate: u32,
     ) -> Result<Self, CurtherError> {
         mouse::panic_if_mouse_pos_unsupported();
 
@@ -41,8 +41,7 @@ impl Curther {
 
         let theremin = builder.build()?;
 
-        let (width, height) = display_size()
-            .expect("failed to get display dimensions");
+        let (width, height) = display_size().expect("failed to get display dimensions");
 
         let rx_key = create_key_listener();
         let rx_mouse = create_mouse_poller(polling_rate);
@@ -127,9 +126,9 @@ fn create_mouse_poller(polling_rate: u32) -> Receiver<Position> {
 
         loop {
             match mouse.get_position() {
-                Ok(Position { x, y })=> {
+                Ok(Position { x, y }) => {
                     if x != prev_x || y != prev_y {
-                        let _ = tx.try_send(Position {x, y});
+                        let _ = tx.try_send(Position { x, y });
                         prev_x = x;
                         prev_y = y;
                     }
@@ -147,7 +146,7 @@ fn create_mouse_poller(polling_rate: u32) -> Receiver<Position> {
 }
 
 pub enum CurtherError {
-    ThereminBuildError(ThereminBuildError)
+    ThereminBuildError(ThereminBuildError),
 }
 
 impl From<ThereminBuildError> for CurtherError {
@@ -159,7 +158,7 @@ impl From<ThereminBuildError> for CurtherError {
 impl fmt::Debug for CurtherError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let msg = match self {
-            CurtherError::ThereminBuildError(msg) => msg
+            CurtherError::ThereminBuildError(msg) => msg,
         };
         write!(f, "failed to create theremin: {:?}", msg)
     }
