@@ -1,11 +1,11 @@
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 mod hyprland;
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 use hyprland::HyprMouse;
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 mod other;
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 use other::DefaultMouse;
 
 use derive_more::Display;
@@ -20,7 +20,7 @@ pub enum Error {
 type StdResult<T, E> = std::result::Result<T, E>;
 pub type Result = StdResult<Position, Error>;
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 pub fn get_mouse() -> StdResult<Box<dyn Mouse>, Error> {
     match HyprMouse::new() {
         Ok(cursor) => Ok(Box::new(cursor)),
@@ -28,12 +28,12 @@ pub fn get_mouse() -> StdResult<Box<dyn Mouse>, Error> {
     }
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 pub fn panic_if_mouse_pos_unsupported() {
     hyprland::panic_if_mouse_pos_unsupported();
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 pub fn get_mouse() -> StdResult<Box<dyn Mouse>, Error> {
     match DefaultMouse::new() {
         Ok(mouse) => Ok(Box::new(mouse)),
@@ -41,7 +41,7 @@ pub fn get_mouse() -> StdResult<Box<dyn Mouse>, Error> {
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 pub fn panic_if_mouse_pos_unsupported() {
     other::panic_if_mouse_pos_unsupported();
 }
