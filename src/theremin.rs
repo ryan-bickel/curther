@@ -1,3 +1,11 @@
+<<<<<<< Updated upstream
+=======
+use crate::mutable_signal_generator::MutableSignalGenerator;
+use crate::waveform::Waveform;
+use atomic_float::AtomicF32;
+use rodio::source::Function;
+use rodio::{Device, OutputStream, OutputStreamBuilder, SampleRate, Source};
+>>>>>>> Stashed changes
 use std::fmt;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
@@ -43,10 +51,18 @@ pub struct ThereminBuilder {
 }
 
 impl ThereminBuilder {
-    pub fn new() -> Result<Self, ThereminBuildError> {
-        let mut output_stream = OutputStreamBuilder::open_default_stream()
-            .map_err(|_| ThereminBuildError::StreamCreation)?;
+    pub fn new(device: Option<Device>) -> Result<Self, ThereminBuildError> {
+        let mut output_stream = if let Some(device) = device {
+            OutputStreamBuilder::from_device(device)
+                .map_err(|_| ThereminBuildError::StreamCreation)?
+                .open_stream()
+                .map_err(|_| ThereminBuildError::StreamCreation)?
+        } else {
+            OutputStreamBuilder::open_default_stream()
+                .map_err(|_| ThereminBuildError::StreamCreation)?
+        };
         output_stream.log_on_drop(false);
+
         let sample_rate = output_stream.config().sample_rate();
 
         Ok(ThereminBuilder {
