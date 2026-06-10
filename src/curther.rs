@@ -1,13 +1,13 @@
 use core::fmt;
 use std::thread;
 use std::time::Duration;
-use mouse_position::mouse_position::{Mouse, Position};
+use mouse_position::mouse_position::Position;
 use rdev::{display_size, listen, EventType, Key};
 use crossbeam_channel::{bounded, select_biased, Receiver, RecvError};
 use log::debug;
 use crate::theremin::{Theremin, ThereminBuildError, ThereminBuilder};
-use crate::Waveform;
-use crate::cursor::Cursor;
+use crate::{Waveform, mouse};
+use crate::mouse::{get_mouse};
 
 pub struct Curther {
     theremin: Theremin,
@@ -27,6 +27,8 @@ impl Curther {
         intervals: Option<Vec<f32>>,
         polling_rate: u32
     ) -> Result<Self, CurtherError> {
+        mouse::panic_if_mouse_pos_unsupported();
+
         let mut builder = ThereminBuilder::new()?
             .refresh_rate(polling_rate)?
             .add_voice(waveform, 1.0)?;
@@ -118,13 +120,13 @@ fn create_key_listener() -> Receiver<Key> {
 
 fn create_mouse_poller(polling_rate: u32) -> Receiver<Position> {
     let (tx, rx) = bounded(1);
-    let cursor = Cursor::new();
     thread::spawn(move || {
+        let mut mouse = get_mouse().expect("should be able to create mouse");
         let mut prev_x = i32::MIN;
         let mut prev_y = i32::MIN;
 
         loop {
-            match cursor.get_position() {
+            match mouse.get_position() {
                 Ok(Position { x, y })=> {
                     if x != prev_x || y != prev_y {
                         let _ = tx.try_send(Position {x, y});

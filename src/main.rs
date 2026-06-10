@@ -6,12 +6,16 @@ mod signals;
 mod mutable_signal_generator;
 mod waveform;
 mod parser_utils;
-mod cursor;
+mod mouse;
+
+use std::thread;
+use std::time::Duration;
 
 use clap::{value_parser, Parser};
 use crate::curther::{Curther, CurtherError};
 use crate::waveform::Waveform;
 use crate::parser_utils::parse_positive_f32;
+use rodio::{OutputStreamBuilder, Source, source::SineWave};
 
 #[derive(Parser)]
 struct Args {
@@ -58,6 +62,13 @@ struct Args {
         value_parser = value_parser!(u32).range(1..=1000)
     )]
     polling_rate: u32,
+
+    #[arg(
+        short = 't',
+        long,
+        default_value_t = false,
+    )]
+    test_tone: bool,
 }
 
 fn main() -> Result<(), CurtherError> {
@@ -67,7 +78,18 @@ fn main() -> Result<(), CurtherError> {
         waveform,
         intervals,
         polling_rate,
+        test_tone,
     } = Args::parse();
+    
+    if test_tone {
+        let output_stream = OutputStreamBuilder::open_default_stream()
+            .expect("should be able to create output stream");
+        output_stream
+            .mixer()
+            .add(SineWave::new(440.0).amplify(0.20));
+        thread::sleep(Duration::from_secs(10));
+        return Ok(());
+    }
 
     let mut curther = Curther::new(frequency, volume, waveform, intervals, polling_rate)?;
     curther.join();
